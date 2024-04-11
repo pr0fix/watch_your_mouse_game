@@ -93,7 +93,9 @@ def check_collisions():
         return True
 
 pygame.init()
-screen = pygame.display.set_mode((800,400))
+width = 800
+height = 400
+screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Watch Your Mouse!")
 icon = pygame.image.load("graphics/elephant.png").convert_alpha()
 pygame.display.set_icon(icon)
@@ -114,6 +116,8 @@ obstacle_group = pygame.sprite.Group()
 
 # Background img
 background_surf = pygame.image.load("graphics/desert_BG.png").convert()
+background_surf = pygame.transform.scale(background_surf,(width,height))
+background_idx = 0
 
 # # Player img on intro screen
 intro_player = pygame.image.load("graphics/elephant.png")
@@ -128,23 +132,22 @@ game_title_rect = game_title.get_rect(center = (400, 70))
 game_instructions = game_font.render("Press space to run", False, "Black")
 game_instructions_rect = game_instructions.get_rect(center = (400, 330))
 
-# End game screen
+# Victory screen sheep
 end_game_image = pygame.image.load("graphics/small-sheep.png")
 end_game_image = pygame.transform.rotozoom(end_game_image, 0, 2)
 end_game_rect = end_game_image.get_rect(center = (400, 200))
 
+# Victory screen gem
 gem_image = pygame.image.load("graphics/gem.png")
 gem_image = pygame.transform.rotozoom(gem_image, 0, 2)
 gem_image_rect = gem_image.get_rect(center = (200, 200))
-
 
 # Timer
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, 1500)
 
-# Ground !!!!! CHANGE THIS !!!!!
-ground_surf = pygame.Surface((800, 100), pygame.SRCALPHA)
-ground_surf.fill((100,100,100,100))
+# Ground
+ground_surf = pygame.Surface((width, 100), pygame.SRCALPHA)
 
 while True:
     for event in pygame.event.get():
@@ -164,20 +167,25 @@ while True:
                 victory = False
             
     if game_active:
-        # Render background
-        screen.blit(background_surf, (0,0))
+        # Render moving background
+        screen.blit(background_surf, (background_idx,0))
+        screen.blit(background_surf, (width+background_idx, 0))
+        if (background_idx==-width):
+            screen.blit(background_surf, (width+background_idx,0))
+            background_idx=0
+        background_idx-=1
 
-        # Ground
+        # Render ground
         screen.blit(ground_surf, (0, 370))
         
-        # Scoreboard
+        # Render scoreboard
         score = display_score()
 
-        # Player (elephant)
+        # Add player (elephant)
         player.draw(screen)
         player.update()
 
-        # Obstacles
+        # Add obstacles
         obstacle_group.draw(screen)
         obstacle_group.update()
 
