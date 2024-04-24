@@ -98,22 +98,61 @@ def check_collisions(score):
     else:
         return True
 
+def animate_game_title():
+    global game_title_scale, game_title_direction
+
+    if game_title_direction == "expand":
+        game_title_scale += 0.005
+    else:
+        game_title_scale -= 0.005
+    
+    if game_title_scale >= 1.2:
+        game_title_direction = "shrink"
+    elif game_title_scale <= 1.0:
+        game_title_direction = "expand"
+
+
+    game_title_surface = game_font.render("Watch Your Mouse!", False, (0, 0, 0))
+    game_title_surface = pygame.transform.rotozoom(game_title_surface, 0, game_title_scale)
+
+    game_title_rect = game_title_surface.get_rect(center=(400, 60))
+
+    # Blit the animated game title onto the screen
+    screen.blit(game_title_surface, game_title_rect)
+
+# Initializing pygame
 pygame.init()
+
+# Game screen width & height variables
 width = 800
 height = 400
 screen = pygame.display.set_mode((width,height))
+
+# Game caption on the top left of the game window
 pygame.display.set_caption("Watch Your Mouse!")
+
+# Game icon on the top left of game window
 icon = pygame.image.load("graphics/elephant.png").convert_alpha()
 pygame.display.set_icon(icon)
-clock = pygame.time.Clock()
+
+# Initialize font used in texts
 game_font = pygame.font.Font("font\PublicPixel.ttf", 15)
+
+# Game state & score system variables
 game_active = False
+victory = False
+clock = pygame.time.Clock()
 start_time = 0
 score = 0
-victory = False
+
+# Background music
 bg_music = pygame.mixer.Sound("audio/bg_music.ogg")
 bg_music.set_volume(0.2)
 bg_music.play(loops = -1)
+
+# Game title animation variables
+game_title_scale = 1.0
+game_title_direction = "expand"
 
 # Groups
 player = pygame.sprite.GroupSingle()
@@ -138,10 +177,8 @@ game_title_rect = game_title.get_rect(center = (400, 60))
 game_instructions = game_font.render("Press space to run", False, "Black")
 game_instructions_rect = game_instructions.get_rect(center = (400, 340))
 
-# High score
+# Get high score
 high_score = get_high_score()
-# high_score_text = game_font.render(f"High score: {high_score}", False, "Black")
-# high_score_rect = high_score_text.get_rect(center=(400, 300))
 
 # Victory screen sheep
 end_game_image = pygame.image.load("graphics/small-sheep.png")
@@ -160,24 +197,35 @@ pygame.time.set_timer(obstacle_timer, 1500)
 # Ground
 ground_surf = pygame.Surface((width, 100), pygame.SRCALPHA)
 
+# Main game loop
 while True:
+
+    # Checking for player events in the game loop
     for event in pygame.event.get():
+
+        # If player quits the game, exit main game loop
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
 
+        # If game state is set to active start spawning obstacles
         if game_active:
             if event.type == obstacle_timer:
                 create_obstacle()
 
+        # If game state is not set to active
         else:
+            # If player presses down on the SPACEBAR, 
+            # set game to active, start timer and start counting the score
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
                 start_time = int(pygame.time.get_ticks() / 1000)
                 score = 0
                 victory = False
             
+    # If game state is set to active
     if game_active:
+        
         # Render moving background
         screen.blit(background_surf, (background_idx,0))
         screen.blit(background_surf, (width+background_idx, 0))
@@ -203,9 +251,11 @@ while True:
         # End game if player collides with obstacles
         game_active = check_collisions(score)
 
+        # Keep track of score and when score 20 is reached set victory to true
         if score >= 20:
             victory = True
         
+        # If victory is true, render game ending screen
         if victory:
             screen.fill((94, 129, 162))
             win_message = game_font.render(f"Congratulations you have won the game, here's a gem!", False, "Black")
@@ -218,23 +268,32 @@ while True:
             pygame.quit()
             exit()
 
+    # If game is not set to active
     else:
+        # Show intro player
         screen.fill((94, 129, 162)) # change background color later
         screen.blit(intro_player, intro_player_rect)
 
+        # Display the score player reached on last run
         player_score = game_font.render(f"Your final score: {score}", False, "Black")
         player_score_rect = player_score.get_rect(center = (400, 340))
-        screen.blit(game_title, game_title_rect)
 
+        # Display animated game title
+        animate_game_title()
+
+        # If current score is 0, show intro screen
         if score == 0:
             screen.blit(game_instructions, game_instructions_rect)
-            
+        # if score is higher than 0 display player score
         else:
             screen.blit(player_score, player_score_rect)
 
+        # On intro screen and game over screen, show the players current high score
         high_score_text = game_font.render(f"High score: {high_score}", False, "Black")
         high_score_rect = high_score_text.get_rect(center=(400, 300))
         screen.blit(high_score_text, high_score_rect)
 
+    # Update display
     pygame.display.update()
+    # Set framerate to 60
     clock.tick(60)
