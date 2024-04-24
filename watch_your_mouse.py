@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
 from random import randint, choice
+from high_score_calculator import save_high_score, get_high_score
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -85,9 +86,14 @@ def display_score():
     screen.blit(score_surf, score_rect)
     return current_time
     
-def check_collisions():
+def check_collisions(score):
+    global high_score
+
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False):
         obstacle_group.empty()
+        if score > high_score:
+            high_score = score
+            save_high_score(high_score)
         return False
     else:
         return True
@@ -122,15 +128,20 @@ background_idx = 0
 # # Player img on intro screen
 intro_player = pygame.image.load("graphics/elephant.png")
 intro_player = pygame.transform.rotozoom(intro_player, 0, 2)
-intro_player_rect = intro_player.get_rect(center = (400, 200))
+intro_player_rect = intro_player.get_rect(center = (400, 180))
 
 # Game title on intro screen
 game_title = game_font.render("Watch Your Mouse!", False, "Black")
-game_title_rect = game_title.get_rect(center = (400, 70))
+game_title_rect = game_title.get_rect(center = (400, 60))
 
 # Intro screen instructions
 game_instructions = game_font.render("Press space to run", False, "Black")
-game_instructions_rect = game_instructions.get_rect(center = (400, 330))
+game_instructions_rect = game_instructions.get_rect(center = (400, 340))
+
+# High score
+high_score = get_high_score()
+# high_score_text = game_font.render(f"High score: {high_score}", False, "Black")
+# high_score_rect = high_score_text.get_rect(center=(400, 300))
 
 # Victory screen sheep
 end_game_image = pygame.image.load("graphics/small-sheep.png")
@@ -190,7 +201,7 @@ while True:
         obstacle_group.update()
 
         # End game if player collides with obstacles
-        game_active = check_collisions()
+        game_active = check_collisions(score)
 
         if score >= 20:
             victory = True
@@ -212,13 +223,18 @@ while True:
         screen.blit(intro_player, intro_player_rect)
 
         player_score = game_font.render(f"Your final score: {score}", False, "Black")
-        player_score_rect = player_score.get_rect(center = (400, 330))
+        player_score_rect = player_score.get_rect(center = (400, 340))
         screen.blit(game_title, game_title_rect)
 
         if score == 0:
             screen.blit(game_instructions, game_instructions_rect)
+            
         else:
             screen.blit(player_score, player_score_rect)
-        
+
+        high_score_text = game_font.render(f"High score: {high_score}", False, "Black")
+        high_score_rect = high_score_text.get_rect(center=(400, 300))
+        screen.blit(high_score_text, high_score_rect)
+
     pygame.display.update()
     clock.tick(60)
