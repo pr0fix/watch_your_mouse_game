@@ -15,7 +15,14 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and self.rect.bottom >= 370:
             self.gravity = -20
-    
+
+        if keys[pygame.K_UP] and self.rect.bottom >= 370:
+            self.gravity = -20
+        
+        if pygame.mouse.get_pressed()[0] and self.rect.bottom >= 370:
+            self.gravity = -20
+        
+
     def apply_gravity(self):
         self.gravity += 1
         self.rect.y += self.gravity
@@ -164,7 +171,7 @@ background_surf = pygame.image.load("graphics/desert_BG.png").convert()
 background_surf = pygame.transform.scale(background_surf,(width,height))
 background_idx = 0
 
-# # Player img on intro screen
+# Player img on intro screen
 intro_player = pygame.image.load("graphics/elephant.png")
 intro_player = pygame.transform.rotozoom(intro_player, 0, 2)
 intro_player_rect = intro_player.get_rect(center = (400, 180))
@@ -188,7 +195,7 @@ end_game_rect = end_game_image.get_rect(center = (400, 200))
 # Victory screen gem
 gem_image = pygame.image.load("graphics/gem.png")
 gem_image = pygame.transform.rotozoom(gem_image, 0, 2)
-gem_image_rect = gem_image.get_rect(center = (200, 200))
+gem_image_rect = gem_image.get_rect(center = (250, 260))
 
 # Timer
 obstacle_timer = pygame.USEREVENT + 1
@@ -264,7 +271,7 @@ while True:
             screen.blit(end_game_image, end_game_rect)
             screen.blit(win_message, win_message_rect)
             pygame.display.update()
-            pygame.time.wait(3000)
+            pygame.time.wait(5000)
             pygame.quit()
             exit()
 
