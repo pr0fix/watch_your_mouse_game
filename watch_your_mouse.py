@@ -77,6 +77,46 @@ class Fly(pygame.sprite.Sprite):
         if self.rect.x <= -100:
             self.kill()
 
+class Coin(pygame.sprite.Sprite):
+    def __init__(self, frames):
+        super().__init__()
+        self.frames = frames
+        self.current_frame = 0
+        self.animation_speed = 0.1
+        self.image = self.frames[self.current_frame]
+        self.rect = self.image.get_rect(midbottom=(randint(900,1100), 300))
+
+    def animate(self):
+        self.current_frame += self.animation_speed
+        if self.current_frame >= len(self.frames):
+            self.current_frame = 0
+        self.image = self.frames[int(self.current_frame)]
+
+    def update(self):
+        self.animate()
+        self.rect.x -= 5
+        if self.rect.x <= -100:
+            self.kill()
+
+def create_coin(frames):
+    y_range = range(200, 300)
+    y = randint(min(y_range), max(y_range))
+    coin = Coin(frames)
+    coin.rect.midbottom = (randint(900, 1100), y)
+
+    while pygame.sprite.spritecollideany(coin, obstacle_group):
+        coin.rect.midbottom = (randint(900, 1100), y)
+    coin_group.add(coin)
+
+def extract_frames(sheet, frame_width, frame_height, num_frames, scale):
+    frames = []
+    sheet_width, sheet_height = sheet.get_size()
+    for x in range(0, sheet_width - frame_width * num_frames, frame_width):
+        frame = sheet.subsurface((x, 0, frame_width, frame_height))
+        frame = pygame.transform.scale(frame, (frame_width * scale, frame_height * scale))
+        frames.append(frame)
+    return frames
+
 def create_obstacle():
     obstacle_type = choice(["mouse", "mouse", "bush", "fly"])
     if obstacle_type == "mouse":
@@ -102,8 +142,12 @@ def check_collisions(score):
             high_score = score
             save_high_score(high_score)
         return False
-    else:
-        return True
+    
+    coin_collision = pygame.sprite.spritecollide(player.sprite, coin_group, True)
+    for coin in coin_collision:
+        score += 5
+
+    return True
 
 def animate_game_title():
     global game_title_scale, game_title_direction
@@ -161,10 +205,15 @@ bg_music.play(loops = -1)
 game_title_scale = 1.0
 game_title_direction = "expand"
 
+# Spritesheet for animated coins
+coin_spritesheet = pygame.image.load("graphics/coin.png").convert_alpha()
+coin_frames = extract_frames(coin_spritesheet, 16, 16, num_frames=7, scale = 2)
+
 # Groups
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 obstacle_group = pygame.sprite.Group()
+coin_group = pygame.sprite.Group()
 
 # Background img
 background_surf = pygame.image.load("graphics/desert_BG.png").convert()
@@ -219,6 +268,8 @@ while True:
         if game_active:
             if event.type == obstacle_timer:
                 create_obstacle()
+                if randint(1, 10) in [1, 5, 8]:
+                    create_coin(coin_frames)
 
         # If game state is not set to active
         else:
@@ -255,11 +306,15 @@ while True:
         obstacle_group.draw(screen)
         obstacle_group.update()
 
+        # Add coins
+        coin_group.draw(screen)
+        coin_group.update()
+
         # End game if player collides with obstacles
         game_active = check_collisions(score)
 
         # Keep track of score and when score 20 is reached set victory to true
-        if score >= 20:
+        if score >= 50:
             victory = True
         
         # If victory is true, render game ending screen
