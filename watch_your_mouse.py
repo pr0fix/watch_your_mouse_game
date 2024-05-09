@@ -237,7 +237,7 @@ game_instructions_rect = game_instructions.get_rect(center = (400, 340))
 high_score = get_high_score()
 
 # Victory screen sheep
-end_game_image = pygame.image.load("graphics/small-sheep.png")
+end_game_image = pygame.image.load("graphics/sheep.png")
 end_game_image = pygame.transform.rotozoom(end_game_image, 0, 2)
 end_game_rect = end_game_image.get_rect(center = (400, 200))
 
@@ -314,7 +314,7 @@ while True:
         game_active = check_collisions(score)
 
         # Keep track of score and when score 20 is reached set victory to true
-        if score >= 50:
+        if score >= 1000:
             victory = True
         
         # If victory is true, render game ending screen
