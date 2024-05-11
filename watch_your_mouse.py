@@ -171,7 +171,6 @@ def animate_game_title():
     # Blit the animated game title onto the screen
     screen.blit(game_title_surface, game_title_rect)
 
-# Initializing pygame
 pygame.init()
 
 # Game screen width & height variables
@@ -179,14 +178,14 @@ width = 800
 height = 400
 screen = pygame.display.set_mode((width,height))
 
-# Game caption on the top left of the game window
+# Game caption
 pygame.display.set_caption("Watch Your Mouse!")
 
-# Game icon on the top left of game window
+# Game icon
 icon = pygame.image.load("graphics/elephant.png").convert_alpha()
 pygame.display.set_icon(icon)
 
-# Initialize font used in texts
+# Initialize font
 game_font = pygame.font.Font("font\PublicPixel.ttf", 15)
 
 # Game state & score system variables
@@ -281,7 +280,7 @@ while True:
                 score = 0
                 victory = False
             
-    # If game state is set to active
+    
     if game_active:
         
         # Render moving background
@@ -313,11 +312,11 @@ while True:
         # End game if player collides with obstacles
         game_active = check_collisions(score)
 
-        # Keep track of score and when score 20 is reached set victory to true
+        # When score is equal to or higher than 1000 == victory
         if score >= 1000:
             victory = True
         
-        # If victory is true, render game ending screen
+        # If victory render ending screen
         if victory:
             screen.fill((94, 129, 162))
             win_message = game_font.render(f"Congratulations you have won the game, here's a gem!", False, "Black")
@@ -330,7 +329,7 @@ while True:
             pygame.quit()
             exit()
 
-    # If game is not set to active
+    
     else:
         # Show intro player
         screen.fill((94, 129, 162)) # change background color later
