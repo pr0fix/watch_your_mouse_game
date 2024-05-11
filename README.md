@@ -7,6 +7,7 @@ In **Watch Your Mouse!**, you control an elephant using either the spacebar, up 
 ## How to Play
 - **Controls**:
   - Press the spacebar, up arrow key, or left mouse button to make the elephant jump.
+- **Gameplay**
   - Avoid colliding with obstacles.
   - Collect coins to increase your score. (not implemented fully)
 
