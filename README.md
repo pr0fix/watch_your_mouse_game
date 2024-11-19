@@ -11,6 +11,17 @@ In **Watch Your Mouse!**, you control an elephant using either the spacebar, up 
   - Avoid colliding with obstacles.
   - Collect coins to increase your score. (not implemented fully)
 
+## Screenshots
+
+#### Start Screen & Gameplay
+<kbd><img src="screenshots/start_screen.PNG" alt="Start screen" height="auto" width="300px"/></kbd>
+<kbd><img src="screenshots/gameplay.PNG" alt="Gameplay" height="auto" width="300px"/></kbd>
+
+#### Game Won & Game Over Screens
+<kbd><img src="screenshots/game_over.PNG" alt="Game over screen" height="auto" width="300px"/></kbd>
+<kbd><img src="screenshots/game_won.PNG" alt="Game over screen" height="auto" width="300px"/></kbd>
+
+
 ## Features
 - **Dynamic Obstacles**: Various obstacles such as mice, bushes and flies appear randomly to challenge the player.
 - **Coin Collection**: Collect coins to increase your score and challenge your friends for the highest score.
